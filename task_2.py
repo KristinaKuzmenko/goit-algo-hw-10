@@ -39,26 +39,54 @@ ax.axvline(x=b, color="gray", linestyle="--")
 ax.set_title(
     "Графік інтегрування f(x) = 4x^3 - 5x + 15 від " + str(a) + " до " + str(b)
 )
+
+# Додамо рандомні точки
+n = 10000
+for _ in range(n):
+    random_x = random.uniform(0, 2)
+    random_y = random.uniform(0, max(y))
+    color = "blue" if random_y <= f(random_x) else "green"
+    ax.plot(random_x, random_y, marker="o", color=color, markersize=1)
+
+
 plt.grid()
 plt.show()
 
 
 # Обчислення інтеграла за допомогою методу монте-карло
-def monte_carlo_integration(f, a, b, n):
-    x = [random.uniform(a, b) for _ in range(n)]
-    y = [f(x_i) for x_i in x]
+def monte_carlo_for_area_of_curvilinear_figure(f, a, b, y_min, y_max, num_points):
+    x = np.random.uniform(a, b, num_points)
+    y = np.random.uniform(0, y_max, num_points)
+    under_curve = np.sum(y < f(x))
+    area = (b - a) * (y_max - y_min) * (under_curve / n) 
+    return area
+
+
+def monte_carlo_for_definite_integral(f, a, b, n):
+    x = np.random.uniform(a, b, n)
+    y  = f(x)
     y_mean = sum(y) / n
     return (b - a) * y_mean
 
 
-result = monte_carlo_integration(f, a, b, 100000)
-print("Інтеграл, обчисленний за допомогою методу Монте-Карло: ", result)
+# Задання параметрів для генерації випадкових точок
+n = 10000
+a = 0
+b = 2
+y_min = 0
+y_max = 50
+
+# Обчислення інтеграла за допомогою методу Монте-Карло для площі криволінійної фігури
+res_mc1 = monte_carlo_for_area_of_curvilinear_figure(f, a, b, y_min, y_max, n)
+print(
+    "Площа криволінійної фігури, обчислена за допомогою методу Монте-Карло: ", res_mc1
+)
+
+# Обчислення інтеграла за допомогою методу Монте-Карло для визначеного інтегралу
+res_mc2 = monte_carlo_for_definite_integral(f, a, b, n)
+print("Визначений інтеграл, обчислений за допомогою методу Монте-Карло: ", res_mc2)
 
 
 # Обчислення інтеграла за допомогою scipy
-a = 0  # нижня межа
-b = 2  # верхня межа
-
-result, error = spi.quad(f, a, b)
-
-print("Інтеграл, обчисленний за допомогою scipy: ", result)
+res_scq, error = spi.quad(f, a, b)
+print("Визначений інтеграл, обчисленний за допомогою scipy: ", res_scq)
